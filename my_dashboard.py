@@ -182,18 +182,18 @@ products_info_fig.update_layout(
     legend=dict(
         title=dict(
             text="Prix des produits",
-            font=dict(size=15),
+            font=dict(size=13),
         ),
-        font=dict(size=14),
-        orientation="v",
-		x=1,
-		y=0.5,
-		yanchor="bottom",
-		xanchor="left",
+        font=dict(size=12),
+        orientation="h",
+		x=0.5,
+		y=0,
+		yanchor="top",
+		xanchor="center",
     ),
     showlegend=True,
   	height=250,
-    margin=dict(t=20, b=20, l=0, r=0),  # Marges proportionnelles
+    margin=dict(t=20, b=20, l=10, r=10),  # Marges proportionnelles
 )
 
 # Annotation centrale
@@ -266,7 +266,7 @@ global_avg_data = all_products["DONNEES (GO)"].mean()
 
 avg_price_data_ = go.Figure()
 
-# 🔵 Prix moyen (axe gauche)
+# Prix moyen (axe gauche)
 avg_price_data_.add_trace(
     go.Bar(
         x=provider_avg_df["NOM ENTREPRISE"],
@@ -277,7 +277,7 @@ avg_price_data_.add_trace(
     )
 )
 
-# 🟢 Data moyenne (axe droit)
+# Data moyenne (axe droit)
 avg_price_data_.add_trace(
     go.Bar(
         x=provider_avg_df["NOM ENTREPRISE"],
@@ -288,7 +288,7 @@ avg_price_data_.add_trace(
     )
 )
 
-# ➖ Prix moyen global
+# Prix moyen global
 
 avg_price_data_ = make_subplots(
     rows=1,
@@ -299,7 +299,7 @@ avg_price_data_ = make_subplots(
     )
 )
 
-# 🔵 Prix moyen
+# Prix moyen
 avg_price_data_.add_trace(
     go.Scatter(
         x=provider_avg_df["avg_price"],
@@ -332,7 +332,7 @@ avg_price_data_.add_annotation(
     col=1
 )
 
-# 🟢 Data moyenne
+# Data moyenne
 avg_price_data_.add_trace(
     go.Scatter(
         x=provider_avg_df["avg_data_go"],
