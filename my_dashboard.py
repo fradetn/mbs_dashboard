@@ -235,9 +235,6 @@ styled_df = (
     })
 )
 
-
-
-
 prod_per_providers_fig = go.Figure()
 
 prod_per_providers_fig.add_trace(
@@ -264,43 +261,9 @@ prod_per_providers_fig.update_layout(
 global_avg_price = all_products["PRIX"].mean()
 global_avg_data = all_products["DONNEES (GO)"].mean()
 
-avg_price_data_ = go.Figure()
+avg_price_fig = go.Figure()
 
-# Prix moyen (axe gauche)
-avg_price_data_.add_trace(
-    go.Bar(
-        x=provider_avg_df["NOM ENTREPRISE"],
-        y=provider_avg_df["avg_price"],
-        name="Prix moyen (€)",
-        yaxis="y1",
-        hovertemplate="Prix moyen: %{y:.2f} €<extra></extra>",
-    )
-)
-
-# Data moyenne (axe droit)
-avg_price_data_.add_trace(
-    go.Bar(
-        x=provider_avg_df["NOM ENTREPRISE"],
-        y=provider_avg_df["avg_data_go"],
-        name="Data moyenne (Go)",
-        yaxis="y2",
-        hovertemplate="Data moyenne: %{y:.2f} Go<extra></extra>",
-    )
-)
-
-# Prix moyen global
-
-avg_price_data_ = make_subplots(
-    rows=1,
-    cols=2,
-    subplot_titles=(
-        "Prix moyen (€) par fournisseur",
-        "Data moyenne (Go) par fournisseur"
-    )
-)
-
-# Prix moyen
-avg_price_data_.add_trace(
+avg_price_fig.add_trace(
     go.Scatter(
         x=provider_avg_df["avg_price"],
         y=provider_avg_df["NOM ENTREPRISE"],
@@ -308,32 +271,35 @@ avg_price_data_.add_trace(
         name="Prix moyen",
         marker=dict(size=10),
         hovertemplate="%{y}<br>Prix moyen: %{x:.2f} €<extra></extra>"
-    ),
-    row=1,
-    col=1
+    )
 )
 
-avg_price_data_.add_vline(
+# Ligne de moyenne globale
+avg_price_fig.add_vline(
     x=global_avg_price,
     line_dash="dash",
-    line_color="red",
-    row=1,
-    col=1
+    line_color="red"
 )
 
-avg_price_data_.add_annotation(
+# Annotation moyenne globale
+avg_price_fig.add_annotation(
     x=global_avg_price,
-    y=-0.5,  # sous le dernier fournisseur
+    y=-0.5,
     text=f"Moyenne globale: {global_avg_price:.2f} €",
     showarrow=False,
     xanchor="center",
-    yanchor="top",
-    row=1,
-    col=1
+    yanchor="top"
 )
 
-# Data moyenne
-avg_price_data_.add_trace(
+avg_price_fig.update_layout(
+    title="Prix moyen (€) par fournisseur",
+    height=510,
+    showlegend=False,
+    margin=dict(t=40, b=0, l=0, r=0)
+)
+avg_data_fig = go.Figure()
+
+avg_data_fig.add_trace(
     go.Scatter(
         x=provider_avg_df["avg_data_go"],
         y=provider_avg_df["NOM ENTREPRISE"],
@@ -341,34 +307,31 @@ avg_price_data_.add_trace(
         name="Data moyenne",
         marker=dict(size=10),
         hovertemplate="%{y}<br>Data moyenne: %{x:.2f} Go<extra></extra>"
-    ),
-    row=1,
-    col=2
+    )
 )
 
-avg_price_data_.add_vline(
+# Ligne de moyenne globale
+avg_data_fig.add_vline(
     x=global_avg_data,
     line_dash="dash",
-    line_color="red",
-    row=1,
-    col=2
+    line_color="red"
 )
 
-avg_price_data_.update_layout(
-    height=550,
-    title="➡ Moyennes par fournisseur vs moyennes globales",
-    showlegend=False
-)
-
-avg_price_data_.add_annotation(
+# Annotation moyenne globale
+avg_data_fig.add_annotation(
     x=global_avg_data,
     y=-0.5,
     text=f"Moyenne globale: {global_avg_data:.2f} Go",
     showarrow=False,
     xanchor="center",
-    yanchor="top",
-    row=1,
-    col=2
+    yanchor="top"
+)
+
+avg_data_fig.update_layout(
+    title="Data moyenne (Go) par fournisseur",
+    height=510,
+    showlegend=False,
+    margin=dict(t=40, b=0, l=0, r=0)
 )
 
 
@@ -399,16 +362,12 @@ provider_price_per_data_fig.add_trace(
 
 # Layout
 provider_price_per_data_fig.update_layout(
-    title={
-        'text': "💰 Prix Moyen du GB par Fournisseur",
-        'x': 0.5,
-        'xanchor': 'center'
-    },
     xaxis_title="Fournisseur",
     yaxis_title="Prix/GB (€)",
-    height=500,
+    height=460,
     showlegend=False,
-    hovermode='x unified'
+    hovermode='x unified',
+	margin=dict(t=20, b=0, l=0, r=0)
 )
 
 
@@ -458,6 +417,7 @@ with col_large:
 		st.markdown("**📊 Produits par Fournisseur**")
 		st.plotly_chart(prod_per_providers_fig, use_container_width=True)
 	with st.container(border=True, height="content", width="stretch"):
+		st.markdown("**💰 Prix Moyen du GB par Fournisseur**")
 		st.plotly_chart(provider_price_per_data_fig, use_container_width=True)		
 with col_small:
 	with st.container(border=True, height="content"):
@@ -472,7 +432,14 @@ with col_small:
 col_small, col_large = st.columns([1, 2], gap="small")
 with col_large:
 	with st.container(border=True, height="content"):
-		st.plotly_chart(avg_price_data_, use_container_width=True)
+		st.markdown("**➡ Moyennes par fournisseur vs moyennes globales**")
+		col1, col2= st.columns(2, gap="small")
+		with col1:
+			with st.container(border=False, height="content"):
+				st.plotly_chart(avg_price_fig, use_container_width=True)
+		with col2:
+			with st.container(border=False, height="content"):
+				st.plotly_chart(avg_data_fig, use_container_width=True)
 with col_small:
 	with st.container(border=True, height="content"):
 		st.markdown("**🌍 Top 10 Pays les Plus Couverts**")
